@@ -13,8 +13,6 @@ gulp.task('less', function(){
 gulp.task('libs', function () {
     var bundle = browserify();
 
-    bundle.add('./app/app.js')
-    bundle.transform('reactify')
     bundle.require('react')
     bundle.require('react-bootstrap')
     bundle.require('lodash')
@@ -29,7 +27,7 @@ gulp.task('libs', function () {
 gulp.task('app', function(){
     var bundle = browserify();
 
-    bundle.add('./app/app.js') 
+    bundle.add('./app/app.jsx') 
     bundle.transform('reactify')
     bundle.external('react')
     bundle.external('react-bootstrap')
