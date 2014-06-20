@@ -11,16 +11,22 @@ Collection.extend = extend;
 function urlError() {throw new Error('A "url" property or function must be specified') };
 
 function Collection(data, model) {
-    var self = this;
+    var self = this
+      , len;
 
     self.model = model || self.model
 
     self.uuid = _.uniqueId('collection_')
 
-    self.push.apply(this, data)
-    /*_.each(data, function(datum){
-        self[idx] = self._createModel(datum);
-    })*/
+    Object.definePropery(this, 'length', {
+        enumerable: false,
+/*        set: function(length){
+            var distance = len - length
+            len = length
+        }*/
+    })
+
+    self.add(this, data)
 }
 
 _.extend(Collection.prototype, {
@@ -58,30 +64,16 @@ _.extend(Collection.prototype, {
     	return (item.id != null && this.find(item, { id: item.id })) || this.find(item, { id: item }) || this[this.indexOf(item)]  
     },
 
-	fetch: function (reset) {
-        var self = this;
-
-        return sync('read', self, {})
-            .then(function (data) {
-                if ( reset ) self.clear()
-
-                self.push.apply(this, data)
-            });
-    },
-
-    create: function (item) {
-        var model = this._createModel(item);
-
-        this.push(model);
-        return model.save();
-    },
-
     clone: function() {
         return new this.constructor(this.toJSON())
     },
 
     clear: function() {
         this.splice(0, this.length);
+    },
+
+    add: function(items){
+        this.push.apply(this, items)
     },
 
     remove: function(item) {
