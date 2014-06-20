@@ -1,0 +1,90 @@
+﻿
+
+.navbar-toolbar {
+    padding: 0 @navbar-padding-horizontal;
+    .form-inline();
+
+    .form-group {
+        @media (max-width: @screen-xs-max) {
+            margin-bottom: 5px;
+        }
+    }
+
+    .navbar-vertical-align(@input-height-base);
+
+    .container > & {
+        padding: 0;
+    }
+}
+
+
+//
+// Callouts
+// --------------------------------------------------
+
+/*!
+ * Copyright 2013 Twitter, Inc.
+ * This work is licensed under the Creative Commons Attribution 3.0 Unported License.
+ * You should have received a copy of this license along with this work.
+ * If not, visit http://creativecommons.org/licenses/by/3.0/ .
+ */
+
+// Callouts
+// -------------------------
+@callout-padding:               10px;
+@callout-border-radius:         0;
+@callout-border:                @gray-lighter;
+
+@callout-info-bg:               @state-info-bg;
+@callout-info-text:             @state-info-text;
+@callout-info-border:           @state-info-border;
+
+@callout-warning-bg:            @state-warning-bg; 
+@callout-warning-text:          @state-warning-text;
+@callout-warning-border:        @state-warning-border;
+
+@callout-danger-bg:             @state-danger-bg; 
+@callout-danger-text:           @state-danger-text;
+@callout-danger-border:         @state-danger-border;
+
+.callout {
+	margin-bottom: @line-height-computed / 2;
+	padding: @callout-padding;
+	border-left: 3px solid @callout-border;
+	border-radius: @callout-border-radius;
+
+	h4 {
+		margin-top: 0;
+		margin-bottom: 5px;
+	}
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.callout-danger {
+	background-color: @callout-danger-bg;
+	border-color: @callout-danger-border;
+	h4 {
+		color: @callout-danger-text;
+	}
+}
+
+.callout-warning {
+	background-color: @callout-warning-bg;
+	border-color: @callout-warning-border;
+	h4 {
+		color: @callout-warning-text;
+	}
+}
+
+.callout-info {
+	background-color: @callout-info-bg;
+	border-color: @callout-info-border;
+	h4 {
+		color: @callout-info-text;
+	}
+}
+
+// end C.C.3 copyright
+// --------------------------------------------------
