@@ -15,7 +15,12 @@
     "browserify": "^4.1.9",
     "gulp-less": "^1.2.3",
     "express": "^4.4.3",
-    "serve-static": "^1.2.3"
+    "serve-static": "^1.2.3",
+    "gulp-rename": "^1.2.0",
+    "gulp-concat": "^2.2.0",
+    "gulp-header": "^1.0.2",
+    "gulp-uglify": "^0.3.0",
+    "gulp-plumber": "^0.6.3"
   },
   "dependencies": {
     "lodash": "^2.4.1",

@@ -1,11 +1,16 @@
 var gulp = require('gulp')
   , less = require('gulp-less')
+  , plumber = require('gulp-plumber')
   , source = require('vinyl-source-stream')
   , browserify = require('browserify')
+  , bootstrap = require('./bootstrap/build')
   , fs = require('fs');
 
+gulp.task('bootstrap', bootstrap);
+
 gulp.task('less', function(){
-    gulp.src('./styles/*.less')
+    gulp.src('./styles/site.less')
+        .pipe(plumber())
         .pipe(less())
         .pipe(gulp.dest('./public/css'));
 });
@@ -20,6 +25,7 @@ gulp.task('libs', function () {
 
     bundle.bundle({ debug: true })
         .pipe(source('lib.js'))
+        .pipe(plumber())
         .pipe(gulp.dest('./public/js'))
 
 });
@@ -36,14 +42,17 @@ gulp.task('app', function(){
 
     bundle.bundle({ debug: true })
         .pipe(source('app.js'))
+        .pipe(plumber())
         .pipe(gulp.dest('./public/js'))
         
 });
 
 gulp.task('watch', function() {
+    gulp.watch('./bootstrap/**/*', ['bootstrap']);
+    gulp.watch('./styles/**/*.less', ['less']);
     gulp.watch('./app/**/*', ['browserify']);
 });
 
 // Default Task
 gulp.task('browserify', ['libs', 'app']);
-gulp.task('default', ['browserify', 'less']);
+gulp.task('default', ['browserify', 'less', 'bootstrap']);

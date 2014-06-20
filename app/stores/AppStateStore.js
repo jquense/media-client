@@ -1,35 +1,13 @@
-var Store = require('react-flow').Store
+var Flow = require('react-flow')
   , Url = require('url')
   , Promise = require('bluebird')
   , _ = require('lodash')
   , Url = require('url')
   , appConstants = require('../constants/AppStateConstants');
 
-var appActions = {}
+module.exports = Flow.defineStore({
 
-appActions[appConstants.AUTHENICATE] = function(){
-    var query = Url.parse(location.href, true).query
-      , token = this.get('access_token')
-      , hash = splitHash() || {}
-
-    if ( token ) return this._set('authorized', true)
-    
-    if ( location.pathname === this.get('redirectUri')) {
-
-        if (location.hash && hash.access_token) 
-            this._setTokens(hash.access_token, hash.refresh_token)
-        
-        else if (query.code !== undefined) 
-            this._requestAccessToken(this.get('redirectUri'), query.code, 'my_client')
-
-        else if (query.error )
-            throw new Error(query.error + ': ' + query.error_description)
-    }
-    else
-        this._requestAuthCode(this.get('redirectUri'), 'my_client')
-}
-
-module.exports = Store.define({
+    mixins: [ Flow.DataHelperStoreMixin ],
 
     getInitialData: function(options){
         //localStorage.removeItem('porch_access_token')
@@ -44,7 +22,33 @@ module.exports = Store.define({
             })
     },
 
-	actions: appActions,
+	getActions: function(){
+        var appActions = {}
+
+        appActions[appConstants.AUTHENICATE] = function(){
+            var query = Url.parse(location.href, true).query
+              , token = this.get('access_token')
+              , hash = splitHash() || {}
+
+            if ( token ) return this._set('authenticated', true)
+            
+            if ( location.pathname === this.get('redirectUri')) {
+
+                if (location.hash && hash.access_token) 
+                    this._setTokens(hash.access_token, hash.refresh_token)
+                
+                else if (query.code !== undefined) 
+                    this._requestAccessToken(this.get('redirectUri'), query.code, 'my_client')
+
+                else if (query.error )
+                    throw new Error(query.error + ': ' + query.error_description)
+            }
+            else
+                this._requestAuthCode(this.get('redirectUri'), 'my_client')
+        }
+
+        return appActions;
+    },
 
 	_requestAuthCode: function( landingPoint, clientId ){
         var redirect = location.origin + landingPoint
@@ -76,7 +80,7 @@ module.exports = Store.define({
         refresh && localStorage.setItem('porch_refresh_token', refresh)
 
         this._extend({
-            authorized: !!access,
+            authenticated: !!access,
             access_token: access,
             refresh_token: refresh
         });

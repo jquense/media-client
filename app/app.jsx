@@ -5,7 +5,7 @@
 window.App = {}
 
 App.appStore = new AppStateStore({
-	server: 'http://localhost:3000',
+	server: 'http://localhost:80',
 	redirectUri: '/auth',
 	clientId: 'another_client'
 })
