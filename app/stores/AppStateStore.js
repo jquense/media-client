@@ -1,8 +1,8 @@
 var Flow = require('react-flow')
+  , on = Flow.defineStore.listenFor
   , Url = require('url')
   , Promise = require('bluebird')
   , _ = require('lodash')
-  , Url = require('url')
   , appConstants = require('../constants/AppStateConstants');
 
 module.exports = Flow.defineStore({
@@ -22,10 +22,8 @@ module.exports = Flow.defineStore({
             })
     },
 
-	getActions: function(){
-        var appActions = {}
-
-        appActions[appConstants.AUTHENICATE] = function(){
+    actions: [
+        on(appConstants.AUTHENICATE, function(){
             var query = Url.parse(location.href, true).query
               , token = this.get('access_token')
               , hash = splitHash() || {}
@@ -45,10 +43,8 @@ module.exports = Flow.defineStore({
             }
             else
                 this._requestAuthCode(this.get('redirectUri'), 'my_client')
-        }
-
-        return appActions;
-    },
+        })
+    ],
 
 	_requestAuthCode: function( landingPoint, clientId ){
         var redirect = location.origin + landingPoint

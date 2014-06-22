@@ -1,5 +1,6 @@
 var React = require('react')
   , ArtistList   = require('./mediaLibrary/ArtistList.jsx')
+  , Link = require('./Link.jsx')
   , MediaContent = require('./MediaContent.jsx')
   , appActions = require('../actions/appActions')
   , StoreWatch = require('react-flow').StoreWatchMixin
@@ -9,7 +10,7 @@ var React = require('react')
 module.exports = MediaApp = React.createClass({
 
 	mixins: [ 
-		StoreWatch(App.appStore, App.artistListStore)
+		StoreWatch(App.appStore, App.artistListStore, App.navStore)
 	],
 
 	componentWillMount: function() {  
@@ -19,6 +20,7 @@ module.exports = MediaApp = React.createClass({
 	render: function() {
 		return ( 
 		  	<div className="container">
+		  		<Link href="/Home/5">Hi!</Link>
 			    <ArtistList
 			      indexes={ this.state.indexes }
 			    />
@@ -29,12 +31,10 @@ module.exports = MediaApp = React.createClass({
 
 	getStoreState: function(){
 		return {
-			indexes: App.artistListStore.getIndexes() || null
+			indexes: App.artistListStore.getIndexes() || null,
+
+			page: App.navStore.get('route') || 'home'
 		}
 	},
-
-	_onChange: function(){
-		this.setState(App.artistListStore.getArtists())
-	}
 
 });

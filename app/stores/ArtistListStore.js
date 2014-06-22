@@ -1,51 +1,43 @@
 var Flow = require('react-flow')
+  , on = Flow.defineStore.listenFor
   , _ = require('lodash')
-  , Collection = require('../dal/Collection')
-  , Model = require('../dal/Model')
+  , Collection = Flow.Collection
+  , Model = Flow.Model
+  , field = Model.field
   , appConstants = require('../constants/AppStateConstants')
 
   , articles = [ 'the', 'el', 'la', 'los', 'las', 'le', 'les'];
 
+var ArtistEntry = Model.define({
+	idField: '_id',
+	images: field([ String ]),
+	albums: field([ String ])
+})
 
 module.exports = Flow.defineStore({
 
 	mixins: [  Flow.DataHelperStoreMixin, require('./ApiStoreMixin') ],
 
 	getInitialData: function(options){
-		var M = Model.define({
-			obj: Model.field({}),
-			num: Model.field(Number, {defaultValue: '5'}),
-			str: Model.field(String, { nullable: true }),
-			str2: Model.field("", { nullable: true }),
-			artists: Model.field(
-				Collection.extend({
-					model: Model.define({ 
-						idField: '_id',
-						albums: Model.field(Array)
-					}),
-					url: '/artists'
-				}))
+
+		return Model.create({
+			selectedArtist: field( ArtistEntry ),
+			artists: 		field( Collection.of(ArtistEntry) )
+		});
+	},
+
+	actions: [
+		on('addArtist', function(name){
+			var state = this.get()
+
+			this._push('artists', { id: _.uniqueId('_'), text: name });
+		}),
+
+		on('loadArtist', function(artistId){
+			this.api('/artists/:id', { id: artistId })
 		})
+	],
 
-		return new M();
-	},
-
-	getActions: function(){
-		var apiActions = {
-
-			addArtist: function(name){
-				var state = this.get()
-
-				this._push('artists', { id: _.uniqueId('_'), text: name });
-			},
-
-			loadArtist: function(artistId){
-				this.api('/artists/:id', { id: artistId })
-			}
-		}
-
-		return apiActions;
-	},
 
 	getIndexes: function(){
 		var grouped = _.map(_.groupBy(this.get('artists'), article), function(items, letter){
@@ -63,7 +55,7 @@ module.exports = Flow.defineStore({
 		var self = this;
 		this.api('/artists')
             .then(function(data){
-                self._push.apply(self, ['artists'].concat(data) )
+                self._add('artists', data)
             })
 	}
 })

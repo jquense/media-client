@@ -1,4 +1,5 @@
 var _ = require('lodash')
+  , on = require('react-flow').defineStore.listenFor
   , appConstants = require('../constants/AppStateConstants')
   , ajax  = require('../util/ajax');
 
@@ -15,9 +16,9 @@ module.exports = {
         }
     },
 
-    getActions: function(actions){
+    actions: [
 
-        actions[appConstants.AUTHENICATE] = function(){
+        on(appConstants.AUTHENICATE, function(){
             var self = this
               , appState = self.refs.AppState;
 
@@ -27,9 +28,9 @@ module.exports = {
 
                     return self._authenticated()
                 })
-        };
+        })
+    ],
 
-    },
 
 	queryString: function(prefix){
         return (prefix ? '?' : '&') + 'access_token=' + this.access_token + '&token_type=Bearer'

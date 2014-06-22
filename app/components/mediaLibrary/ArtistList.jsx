@@ -16,9 +16,13 @@ module.exports = React.createClass({
 			return (
 				<li>
 					<h4 className="index-header">{ index.letter }</h4>
-					<ul className='index-item-list'>
+					<ul className='index-item-list row'>
 						{ _.map(index.artists, function(artist){
-							return ArtistListItem(artist)
+							return (
+								<li key={artist.id} className="col-sm-3 artist-item">
+									{ArtistListItem(artist)}
+								</li>
+							)
 						})}
 					</ul>
 				</li>)

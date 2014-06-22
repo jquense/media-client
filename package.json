@@ -27,6 +27,8 @@
     "bluebird": "^2.0.7",
     "react-bootstrap": "^0.10.2",
     "envify": "^1.2.1",
-    "react": "^0.10.0"
+    "react": "^0.10.0",
+    "qs": "^0.6.6",
+    "path-to-regexp": "^0.2.1"
   }
 }
