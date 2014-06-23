@@ -4,12 +4,14 @@ var _ = require('lodash')
 
 module.exports = Route
 
-function Route(pattern) {
+function Route(options) {
     var self = this
       , keys = [];
 
-    this.pattern = pattern
-    this.regex = pathRegex(pattern, keys)
+    this.method  = options.method
+    this.action  = options.action
+    this.pattern = options.pattern
+    this.regex = pathRegex(this.pattern, keys)
     this.optionals = 0
     this.repeats = 0
 

@@ -1,13 +1,16 @@
 var _ = require('lodash')
   , Promise = require('bluebird')
-  , createAction = require('react-flow').createActions
-  , appConstants = require('../constants/AppStateConstants');
+  , action = require('react-flow').actions
+  , appConstants = require('../constants/appConstants');
 
-var actions = {}
+module.exports = {
 
-actions[appConstants.AUTHENICATE] = createAction.passThrough
+	authenticate: action.dispatchTo(appConstants.AUTHENICATE),
 
-module.exports = createAction(actions)
+	start: action.dispatchTo(appConstants.START, function(send){
+		send(appConstants.AUTHENICATE)
+	})
+}
 
 
 

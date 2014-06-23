@@ -1,8 +1,8 @@
 var _ = require('lodash')
   , Promise = require('bluebird')
-  , createAction = require('react-flow').createActions
+  , actions = require('react-flow').actions
 
 
-module.exports = createAction({
-	addArtist: createAction.passThrough
-})
+module.exports = {
+	addArtist: actions.dispatchTo('addArtist')
+}

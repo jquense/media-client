@@ -9,7 +9,7 @@ module.exports = React.createClass({
 	render: function(){
 
 		return (      
-			<Link route='artists' routeValues={{ artist_id: this.props.id}}>
+			<Link routeValues={{ action: 'library', method: 'loadArtist', artist_id: this.props.id}}>
 				<div>{this.props.id}</div>
 			</Link>
 		)

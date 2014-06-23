@@ -4,7 +4,6 @@ var Flow = require('react-flow')
   , Collection = Flow.Collection
   , Model = Flow.Model
   , field = Model.field
-  , appConstants = require('../constants/AppStateConstants')
 
   , articles = [ 'the', 'el', 'la', 'los', 'las', 'le', 'les'];
 

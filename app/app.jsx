@@ -1,21 +1,12 @@
 ﻿var React = require('react')
-  , AppStateStore = require('./stores/AppStateStore')
   , LibraryStore = require('./stores/ArtistListStore')
+  , Library = require('./components/Library.jsx')
+  , Playlists = require('./components/Playlists.jsx')
   , flow = require('./lib/Application');
  
 window.App = flow.create()
 
-App.appStore = new AppStateStore({
-    server: 'http://localhost:80',
-	redirectUri: '/auth',
-	clientId: 'another_client'
-})
-
-App.libraryStore = new LibraryStore({ 
-  	refs: [ App.appStore ]
-})
-
-App.router
+App.routerActions
     .map(function(){
 
         this.actions('library', function() {
@@ -30,13 +21,18 @@ App.router
 
         this.actions('playlists')
     })
-    .start();
 
+App.libraryStore = new LibraryStore({ 
+    refs: [ App.appStore ]
+})
 
+App.children = [
+  Library,
+  Playlists
+]
 
-var MediaApp = require('./components/MediaApp.jsx')
-
-React.renderComponent(
-    <MediaApp />,
-    document.body
-);
+App.appActions.start({
+    server: 'http://localhost:80',
+    redirectUri: '/auth',
+    clientId: 'another_client'
+});

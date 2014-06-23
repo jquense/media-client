@@ -3,30 +3,36 @@ var Flow = require('react-flow')
   , Url = require('url')
   , Promise = require('bluebird')
   , _ = require('lodash')
-  , appConstants = require('../constants/AppStateConstants');
+  , appConstants = require('../constants/appConstants');
 
 module.exports = Flow.defineStore({
 
     mixins: [ Flow.DataHelperStoreMixin ],
 
-    getInitialData: function(options){
+    getInitialData: function(){
         //localStorage.removeItem('porch_access_token')
         //localStorage.removeItem('porch_refresh_token')
 
-        return _.extend(
-            _.pick(options, 'server', 'clientId', 'redirectUri'),
-            {
-                authorized:    false,
-                access_token:  localStorage.getItem('porch_access_token'),
-                refresh_token: localStorage.getItem('porch_refresh_token')
-            })
+        return {
+            started:       false,
+            authorized:    false,
+            access_token:  localStorage.getItem('porch_access_token'),
+            refresh_token: localStorage.getItem('porch_refresh_token')
+        }
     },
 
     actions: [
+
+        on(appConstants.START, function(options){
+            this._extend(options)
+        }),
+
         on(appConstants.AUTHENICATE, function(){
             var query = Url.parse(location.href, true).query
               , token = this.get('access_token')
               , hash = splitHash() || {}
+
+            if(!this.data.started) return
 
             if ( token ) return this._set('authenticated', true)
             
@@ -44,6 +50,7 @@ module.exports = Flow.defineStore({
             else
                 this._requestAuthCode(this.get('redirectUri'), 'my_client')
         })
+
     ],
 
 	_requestAuthCode: function( landingPoint, clientId ){

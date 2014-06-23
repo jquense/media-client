@@ -4,7 +4,7 @@ var Flow = require('react-flow')
   , Route = require('../lib/Route')
   , Promise = require('bluebird'), _ = require('lodash'), $ = require('jquery'), qs = require('qs')
   , navConstants = require('../constants/navigationConstants')
-  , appConstants = require('../constants/appStateConstants');
+  , appConstants = require('../constants/appConstants');
 
 var history = window.history
   , supported = !!(history && history.pushState)
@@ -33,6 +33,7 @@ module.exports = Flow.defineStore({
             routes: {}
         }
     },
+    
     actions: [
 
         listenFor( navConstants.START, appConstants.START, 
@@ -92,20 +93,12 @@ module.exports = Flow.defineStore({
                 this._setLocation(window.location)
             }),
 
-        listenFor( navConstants.REGISTER, function(name, patterns){
+        listenFor( navConstants.REGISTER, function(routes){
             var self = this
-              , routes = name
               , params = {}
 
-            if ( typeof name === 'string')
-                (routes = {})[name] = patterns
-            
-            routes = _.mapValues(routes, function(patterns, name){
-                patterns = [].concat(patterns);
-
-                return _.map(patterns, function(p){
-                    return new Route(p)
-                })
+            routes = _.map([].concat(routes), function(route){
+                return new Route(route)
             })
 
             if ( this.data.started)
@@ -182,13 +175,19 @@ module.exports = Flow.defineStore({
             window.location.hash = '#' + fragment
     },
 
-    getUrl: function(name, params, query) {
+    getUrl: function(routeValues) {
         var url  = this.data.root
-          , routes = this.get('routes')[name]
+          , params = _.without(routeValues, 'action', 'method')
+          , filter = _.defaults(
+                _.pick(routeValues, 'action', 'method'), 
+                _.pick(this.data, 'action', 'method'))
+          , routes = this.get('routes')
           , match;
 
+        routes = _.where(routes, filter);
+
         if (!routes) 
-            throw new TypeError('No route by the name: ' + name + ' exists')
+            throw new TypeError('No route by the found')
  
         _.any(routes, function(r) { 
             match = r.generate(params) 

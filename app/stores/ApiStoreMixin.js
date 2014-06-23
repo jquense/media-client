@@ -1,13 +1,13 @@
 var _ = require('lodash')
   , on = require('react-flow').defineStore.listenFor
-  , appConstants = require('../constants/AppStateConstants')
+  , appConstants = require('../constants/appConstants')
   , ajax  = require('../util/ajax');
 
 
 module.exports = {
 
 	refs: {
-		AppState: require('./AppStateStore')
+		AppState: require('./AppStore')
 	},
 
     getInitialData: function(){
