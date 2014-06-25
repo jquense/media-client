@@ -8,11 +8,14 @@ function Route(options) {
     var self = this
       , keys = [];
 
-    this.method  = options.method
-    this.action  = options.action
-    this.name    = options.name
-    this.handler = options.handler
-    this.pattern = options.pattern
+    if (!(this instanceof Route))
+        return new Route(options)
+
+    this.name     = options.name
+    this.handler  = options.handler
+    this.pattern  = options.pattern.charAt(0) === '/' ? options.pattern.substr(1) : options.pattern
+    this.children = _.map(options.children, Route)
+
     this.regex = pathRegex(this.pattern, keys)
     this.optionals = 0
     this.repeats = 0
@@ -32,18 +35,7 @@ function Route(options) {
 Route.prototype = {
 
     match: function(fragment){
-        var match = this.regex.exec(fragment)
-          , keys = this.keys
-          , params = {}
-
-        if(!match) return null
-
-        return { 
-            path: match[0],
-            params: _.transform(match.slice(1), function(obj, val, idx){
-                obj[keys[idx].name] = val
-            }, {})
-        }   
+        return match(fragment, this)  
     },
 
     generate: function(params, query){
@@ -65,6 +57,45 @@ Route.prototype = {
 
         return path.replace(/^[#\/]|\s+$/g, '')
     }
+}
+
+function match(fragment, route){
+    var subs = route.children
+      , matches, root, params;
+
+    _.any([].concat(subs), function(c){
+        return matches = match(fragment, c)
+    })
+
+    if( matches ) {
+        params = {}
+        root = _.last(matches)
+
+        _.transform(route.keys, function(o, val){
+            params[val] = root.params[val]
+        }, params)
+
+        matches.unshift({ route: route, params: params})
+        return matches
+    }
+
+    params = getParams(fragment, route)
+
+    return params 
+        ? [{ route: route, params: params}]
+        : null
+}
+
+function getParams(fragment, route){
+    var match  = route.regex.exec(fragment)
+      , keys   = route.keys
+      , params = {}
+
+    if(!match) return null
+
+    return _.transform(match.slice(1), function(obj, val, idx){
+        obj[keys[idx].name] = val
+    }, {})
 }
 
 function replaceRegex( key) {

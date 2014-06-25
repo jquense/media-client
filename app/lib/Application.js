@@ -19,7 +19,7 @@ module.exports = {
 
 		app.appActions = appActions
 		app.routerActions = routerActions
-		
+		app.routerActions._app = app
 		//app.component = app._component()
 
 		Dispatcher.register('Application',
@@ -27,7 +27,7 @@ module.exports = {
 				var action = payload.action
 
 				if( action === appConstants.START )
-					app.mount({}, app.children)
+					app.mount(app.routerStore.get(), app.children)
 			})
 
 		return app
@@ -42,7 +42,7 @@ Application.prototype = {
 
 	mount: function(props, children){
 
-		React.renderComponent(this.component(null), document.body);
+		React.renderComponent(this.component(props), document.body);
 	},
 
 	get: function(key, type){

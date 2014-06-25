@@ -93,18 +93,19 @@ module.exports = Flow.defineStore({
                 this._setLocation(window.location)
             }),
 
-        listenFor( navConstants.REGISTER, function(routes){
+        listenFor( navConstants.REGISTER, function(route){
             var self = this
               , params = {}
 
-            routes = _.map([].concat(routes), function(route){
-                return new Route(route)
-            })
+            route = new  Route(route)
 
-            if ( this.data.started)
-                this._setLocation(this.data, routes)
-            else
-                this._merge('routes', routes)
+            //if ( this.data.started)
+                this._setLocation(window.location, route)
+            // else
+            //     this._set({
+            //         routes: route,
+            //         names:  this._byName(route)
+            //     })
         })
     ],
 
@@ -127,30 +128,15 @@ module.exports = Flow.defineStore({
         return fragment.replace(routeStripper, '');
     },
 
-    _match: function(fragment, routes){
+    _match: function(fragment, route){
         var match = {}
           , found;
       
         fragment = fragment.split('?')[0]
 
-        routes = routes || this.get('routes')
+        route = route || this.get('route')
 
-        found = _.any(routes, function(route, name){
-            var route = route.match(fragment)
-
-            _.any(routes, function(r){ 
-                
-                return route
-            })
-
-            if( route ) 
-                match = { 
-                    currentRoute: name, 
-                    params: route.params
-                }
-
-            return !!route
-        })
+        found = route.match(fragment)
 
         return found ? match : null;
     },
@@ -159,12 +145,12 @@ module.exports = Flow.defineStore({
         this._setLocation(window.location)
     },
 
-    _setLocation: function(loc, routes){
+    _setLocation: function(loc, route){
         var parsed   = Url.parse(loc.href, true)
           , fragment = this.getFragment(parsed)
-          , match    = this._match(fragment, routes)
+          , match    = this._transitionTo(fragment, route)
 
-        this._extend(parsed, match, routes)
+        this._extend(parsed, match, { route: route })
     },
 
     _updateHash: function( fragment, replace) {
@@ -173,6 +159,38 @@ module.exports = Flow.defineStore({
                 window.location.href.replace(/(javascript:|#).*$/, ''), '#' + fragment)
         else
             window.location.hash = '#' + fragment
+    },
+
+    _byName: function(routes){
+
+        return reduce(routes)
+
+        function reduce(rts, obj){
+
+            return _.transform(rts, function(obj, route){
+                obj[route.name] = route
+
+                if( route.children && route.children.length)
+                    reduce(route.children, obj)
+            }, obj || {})
+        }
+    },
+
+    _transitionTo: function(fragment, route){
+        var lastMatches = this.get('matches') || []
+          , leaving, entering, matches, prev;
+
+        route = route || this.get('route')
+
+        if ( fragment === this.getFragment() ) 
+            return 
+
+        matches = route.match(fragment) || []
+
+        leaving  = _.without(lastMatches, matches)
+        entering = _.without(matches, lastMatches)
+
+        return compute(matches)
     },
 
     getUrl: function(routeValues) {
@@ -202,6 +220,22 @@ module.exports = Flow.defineStore({
         if ( query ) url += "?" + qs.stringify(query);
         
         return url;
-   }
- 
+    }    
 })
+
+
+   function compute(matches){
+        var prev
+          , props;
+
+        _.eachRight(matches, function(match, idx) {
+            props = {}
+            props.activeRoute = prev ? prev.handler : null
+            props.params = match.params;
+
+            match.handler = match.route.handler(props);
+            prev = match;
+        })
+
+        return props
+   }

@@ -29,6 +29,7 @@
     "envify": "^1.2.1",
     "react": "^0.10.0",
     "qs": "^0.6.6",
-    "path-to-regexp": "^0.2.1"
+    "path-to-regexp": "^0.2.1",
+    "jquery": "~2.1.1"
   }
 }
