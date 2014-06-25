@@ -10,6 +10,8 @@ function Route(options) {
 
     this.method  = options.method
     this.action  = options.action
+    this.name    = options.name
+    this.handler = options.handler
     this.pattern = options.pattern
     this.regex = pathRegex(this.pattern, keys)
     this.optionals = 0

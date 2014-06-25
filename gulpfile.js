@@ -24,6 +24,7 @@ gulp.task('libs', function () {
     bundle.require('bluebird')
 
     bundle.bundle({ debug: true })
+        .on("error", handleError)
         .pipe(source('lib.js'))
         .pipe(plumber())
         .pipe(gulp.dest('./public/js'))
@@ -41,6 +42,7 @@ gulp.task('app', function(){
     bundle.external('bluebird')
 
     bundle.bundle({ debug: true })
+        .on("error", handleError)
         .pipe(source('app.js'))
         .pipe(plumber())
         .pipe(gulp.dest('./public/js'))
@@ -56,3 +58,8 @@ gulp.task('watch', function() {
 // Default Task
 gulp.task('browserify', ['libs', 'app']);
 gulp.task('default', ['browserify', 'less', 'bootstrap']);
+
+function handleError(err) {
+  console.log(err.toString());
+  this.emit('end');
+}

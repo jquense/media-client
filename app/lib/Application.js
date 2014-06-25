@@ -1,8 +1,8 @@
 var React = require('react')
   , Dispatcher    =	require('react-flow/lib/Dispatcher')
   , routerActions = require('../actions/navActions')
-  , routerStore   = require('../stores/NavigationStore')
-  , appStore      = require('../stores/AppStore')
+  , RouterStore   = require('../stores/NavigationStore')
+  , AppStore      = require('../stores/AppStore')
   , appActions    = require('../actions/appActions')
   , appConstants  = require('../constants/appConstants')
 
@@ -14,20 +14,20 @@ module.exports = {
 	create: function(options){
 		var app = new Application
 
-		app.appStore = new appStore()
-		app.routerStore = new NavStore({ pushState: true })
+		app.appStore = new AppStore()
+		app.routerStore = new RouterStore({ pushState: true })
 
-		app.appActions = routerActions
+		app.appActions = appActions
 		app.routerActions = routerActions
 		
-		app.component = app._component()
+		//app.component = app._component()
 
 		Dispatcher.register('Application',
 			function(payload){
 				var action = payload.action
 
 				if( action === appConstants.START )
-					app.mount({}, this.children)
+					app.mount({}, app.children)
 			})
 
 		return app
@@ -42,9 +42,7 @@ Application.prototype = {
 
 	mount: function(props, children){
 
-		React.renderComponent(
-			this.component(props || {}, children)
-			, document.body);
+		React.renderComponent(this.component(null), document.body);
 	},
 
 	get: function(key, type){
@@ -76,7 +74,7 @@ Application.prototype = {
 			},
 
 			render: function(){
-				return React.DOM.div({}, app.children)
+				return React.DOM.div(null, this.props.children)
 			},
 
 			_onRouteChange: function(){

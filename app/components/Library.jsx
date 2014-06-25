@@ -5,7 +5,7 @@ var React = require('react')
   , StoreWatch = require('react-flow').StoreWatchMixin;
 
 
-module.exports = MediaApp = React.createClass({
+module.exports = Library = React.createClass({
 
 	mixins: [ 
 		StoreWatch(App.libraryStore)
@@ -26,9 +26,9 @@ module.exports = MediaApp = React.createClass({
 
 	getStoreState: function(){
 		return {
-			indexes: App.artistListStore.getIndexes() || null,
+			indexes: App.libraryStore.getIndexes() || null,
 
-			page: App.navStore.get('route') || 'home'
+			page: App.routerStore.get('route') || 'home'
 		}
 	},
 

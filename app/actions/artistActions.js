@@ -4,5 +4,8 @@ var _ = require('lodash')
 
 
 module.exports = {
-	addArtist: actions.dispatchTo('addArtist')
+	
+	addArtist: actions.dispatchTo('addArtist'),
+
+	fetch: actions.dispatchTo('library_fetch')
 }

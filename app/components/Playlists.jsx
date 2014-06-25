@@ -25,9 +25,7 @@ module.exports = MediaApp = React.createClass({
 
 	getStoreState: function(){
 		return {
-			indexes: App.artistListStore.getIndexes() || null,
-
-			page: App.navStore.get('route') || 'home'
+			indexes: App.libraryStore.getIndexes() || null,
 		}
 	},
 

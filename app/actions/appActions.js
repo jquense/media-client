@@ -5,10 +5,11 @@ var _ = require('lodash')
 
 module.exports = {
 
-	authenticate: action.dispatchTo(appConstants.AUTHENICATE),
+	authenticate: action.dispatchTo(appConstants.AUTHENTICATE),
 
-	start: action.dispatchTo(appConstants.START, function(send){
-		send(appConstants.AUTHENICATE)
+	start: action.dispatchTo(appConstants.START, function(o, send){
+
+		send(appConstants.AUTHENTICATE, o)
 	})
 }
 

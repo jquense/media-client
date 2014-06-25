@@ -127,19 +127,19 @@ module.exports = Flow.defineStore({
         return fragment.replace(routeStripper, '');
     },
 
-    _match: function(fragment, routeGroups){
+    _match: function(fragment, routes){
         var match = {}
           , found;
       
         fragment = fragment.split('?')[0]
 
-        routeGroups = routeGroups || this.get('routes')
+        routes = routes || this.get('routes')
 
-        found = _.any(routeGroups, function(routes, name){
-            var route; 
+        found = _.any(routes, function(route, name){
+            var route = route.match(fragment)
 
             _.any(routes, function(r){ 
-                route = r.match(fragment)
+                
                 return route
             })
 

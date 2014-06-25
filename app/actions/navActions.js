@@ -17,22 +17,7 @@ module.exports = {
 			  , routes = []
 
 	        cb.call(builder)
-
-	        routes = _.reduce(builder.routes, function(arr, group, actions){
-	            return arr.concat(
-	                _.reduce(group, function(arr, routes, method){
-	                    return arr.concat(_.map(routes, function(pattern){
-	                    	return {
-	                    		pattern: pattern,
-	                    		method: method,
-	                    		action: actions
-	                    	}
-	                    }))
-	                },[])
-	            )
-	        }, [])
-
-	        send([routes])
+	        send([ builder.flatten() ])
 	})
 }
 
@@ -74,9 +59,10 @@ RouteBuilder.prototype = {
         if( cb ){
             builder = new RouteBuilder(name, path, false)
             cb.call(builder)
-            _.merge(this.routes, builder.routes, function(a,b){
-                return _.isArray(a) ? a.concat(b) : undefined
-            })
+            this.children = builder.routes
+            // _.merge(this.routes, builder.routes, function(a,b){
+            //     return _.isArray(a) ? a.concat(b) : undefined
+            // })
         } 
         else {
             this.add(name, path)
@@ -86,13 +72,34 @@ RouteBuilder.prototype = {
     add: function(name, path){
         var parent = this.parent || name;
 
+        this.routes = { name: name, path: path }
         // path = _.map([].concat(path), function(path){
         //     return new Route(path)
         // })
 
-        this.routes[parent] = (this.routes[parent] || {})
-        this.routes[parent][name] = ( this.routes[parent][name] || []).concat(path)
+        // this.routes[parent] = (this.routes[parent] || {})
+        // this.routes[parent][name] = ( this.routes[parent][name] || []).concat(path)
+    },
+
+    flatten: function(){
+
+        return reduce(this.routes)
+
+        function map(routes, action, name){
+            return _.map(routes, function(p){
+                return { pattern: p, action: action, method: name}
+            })
+        }
+
+        function reduce(arr, a){
+            return _.reduce(arr, function(arr, group, b){
+                return arr.concat(_.isArray(group)
+                    ? map(group, a, b)
+                    : reduce(group, b))
+            }, [])
+        }  
     }
+
 }
 
 
